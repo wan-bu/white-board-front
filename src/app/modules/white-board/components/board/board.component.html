@@ -1,1 +1,13 @@
-<canvas #canvas style="border:1px solid #000000;" width="600" height="300"  (mousedown)="click($event)" (mousemove)="trace($event)" (mouseup)="release($event)"></canvas>
+
+<div class="container">
+    <div class="jumbotron">
+      <h1>White Booard</h1>
+      <h2>By Boukedir Marouane</h2>
+    </div>
+    <div class="panel panel-primary">
+      <div class="panel-heading">Board</div>
+      <div class="panel-body" >
+        <canvas #canvas style="border:1px solid #000000; border-radius: 5px;width: 1108px;"   (mousedown)="click($event)" (mousemove)="trace($event)" (mouseup)="release($event)"></canvas>
+      </div>
+    </div>
+  </div>
