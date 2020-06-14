@@ -1,4 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { BoardService } from '../../services/board/board.service';
+import { Point } from '../../models/point';
 
 @Component({
   selector: 'app-board',
@@ -7,53 +9,70 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 })
 export class BoardComponent implements OnInit {
 
-  constructor() { }
+  constructor(private boardService: BoardService) { }
 
   @ViewChild('canvas', { static: true })
-  canvas: ElementRef<HTMLCanvasElement>;  
+  canvas: ElementRef<HTMLCanvasElement>;
 
-  down : boolean = false;
-  posX:number=0;
-  posY:number=0;
-  
+  isMouseDown: boolean = false;
+  oldPosX: number = 0;
+  oldPosY: number = 0;
+
   private ctx: CanvasRenderingContext2D;
 
   ngOnInit(): void {
     this.ctx = this.canvas.nativeElement.getContext('2d');
-    
+    this.boardService.loadNewPoints();
+    this.boardService.data.subscribe(loadedPoint => {
+      if (this.oldPosX == 0 && this.oldPosY == 0) {
+        this.oldPosX = loadedPoint.posX;
+        this.oldPosY = loadedPoint.posY;
+      }
+      this.draw(loadedPoint);
+      console.log("ha7na dkhelna a hbiba !>>>> ", loadedPoint)
+    });
   }
-  click(event){
-    this.down=true;
+
+  click(event) {
+    this.isMouseDown = true;
     const rect = this.canvas.nativeElement.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
     console.log("x: " + x + " y: " + y);
-    this.posX=x;
-    this.posY=y;
-    this.draw(x,y);
+    this.oldPosX = x;
+    this.oldPosY = y;
+    let point = new Point(x, y);
+    this.draw(point);
+    this.boardService.sendPoint(point);
   }
 
-  trace(event){
-    if(this.down){
+  trace(event) {
+    if (this.isMouseDown) {
       const rect = this.canvas.nativeElement.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
       console.log("x: " + x + " y: " + y);
-      this.draw(x,y);
-    }
-  }
-  release(event){
-    if(this.down){
-      this.down=false;
+      let point = new Point(x, y);
+      this.draw(point);
+      this.boardService.sendPoint(point);
     }
   }
 
-  draw(x,y){
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.posX, this.posY);
-    this.ctx.lineTo(x, y);
-    this.ctx.stroke();
-    this.posX=x;
-    this.posY=y;
+
+  release(event) {
+    if (this.isMouseDown) {
+      this.isMouseDown = false;
+    }
   }
+
+  draw(point: Point) {
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.oldPosX, this.oldPosY);
+    this.ctx.lineTo(point.posX, point.posY);
+    this.ctx.lineWidth = 3;
+    this.ctx.stroke();
+    this.oldPosX = point.posX;
+    this.oldPosY = point.posY;
+  }
+
 }
