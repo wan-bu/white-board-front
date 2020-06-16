@@ -26,7 +26,7 @@ export class MessageService {
 
 
   initializeWebSocketConnection() {
-    const serverUrl = 'http://localhost:8090/websocket-kafka';
+    const serverUrl = 'http://10.218.170.193:8090/websocket-kafka';
     const ws = new SockJS(serverUrl);
     this.stompClient = Stomp.over(ws);
     const that = this;
