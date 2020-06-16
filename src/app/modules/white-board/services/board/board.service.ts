@@ -3,6 +3,7 @@ import { ProgressWebsocketService } from 'src/app/services/websocket/progress.we
 import { Point } from '../../models/point';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { BehaviorSubject } from 'rxjs';
+import { MessageService } from 'src/app/services/websocket/message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,15 +18,16 @@ export class BoardService {
     this.point.next(data);
   }
 
-  constructor(private progressWebsocketService: ProgressWebsocketService) {
+  constructor(
+    private messageService : MessageService) {
 
   }
 
   public loadNewPoints() : Point {
     var point : any;
-    this.progressWebsocketService.getObservable().subscribe((data) => {
+    this.messageService.data.subscribe((data) => {
       console.log("load new point ======> ", data)
-      point= data.message;
+      point= data;
       this.updatedDataSelection(point);
     }
     );
@@ -33,6 +35,6 @@ export class BoardService {
   }
 
   public sendPoint(point:Point)  {
-    this.progressWebsocketService.senMessage(point);
+    this.messageService.sendMessage(point);
   }
 }
