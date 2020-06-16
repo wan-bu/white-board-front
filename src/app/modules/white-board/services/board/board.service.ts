@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { ProgressWebsocketService } from 'src/app/services/websocket/progress.websocket.service';
 import { Point } from '../../models/point';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { BehaviorSubject } from 'rxjs';
