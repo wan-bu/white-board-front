@@ -5,8 +5,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BoardComponent } from './modules/white-board/components/board/board.component';
 import { WhiteBoardModule } from './modules/white-board/white-board.module';
-import { RxStompService  } from '@stomp/ng2-stompjs';
-import { ProgressWebsocketService } from './services/websocket/progress.websocket.service';
 @NgModule({
   declarations: [
     AppComponent,
@@ -18,8 +16,6 @@ import { ProgressWebsocketService } from './services/websocket/progress.websocke
     WhiteBoardModule
   ],
   providers: [
-    RxStompService,
-    ProgressWebsocketService
   ],
   bootstrap: [AppComponent]
 })
