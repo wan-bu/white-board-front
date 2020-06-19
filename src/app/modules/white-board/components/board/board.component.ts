@@ -24,6 +24,7 @@ export class BoardComponent implements OnInit {
     this.ctx = this.canvas.nativeElement.getContext('2d');
     this.boardService.loadNewPoints();
     this.boardService.data.subscribe(loadedPoint => {
+      console.log(loadedPoint);
       if (this.oldPosX == 0 && this.oldPosY == 0) {
         this.oldPosX = loadedPoint.posX;
         this.oldPosY = loadedPoint.posY;
@@ -44,6 +45,7 @@ export class BoardComponent implements OnInit {
     let point = new Point(x, y);
     this.draw(point);
     this.boardService.sendPoint(point);
+    console.log("click");
   }
 
   trace(event) {
@@ -55,6 +57,7 @@ export class BoardComponent implements OnInit {
       let point = new Point(x, y);
       this.draw(point);
       this.boardService.sendPoint(point);
+      console.log("trace");
     }
   }
 
@@ -66,10 +69,12 @@ export class BoardComponent implements OnInit {
   }
 
   draw(point: Point) {
+    // debugger
     this.ctx.beginPath();
     this.ctx.moveTo(this.oldPosX, this.oldPosY);
     this.ctx.lineTo(point.posX, point.posY);
-    this.ctx.lineWidth = 3;
+    // this.ctx.lineWidth = 3;
+    this.ctx.strokeStyle = "#FF0000";
     this.ctx.stroke();
     this.oldPosX = point.posX;
     this.oldPosY = point.posY;

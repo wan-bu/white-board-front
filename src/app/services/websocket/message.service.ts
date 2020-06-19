@@ -30,10 +30,9 @@ export class MessageService {
     const ws = new SockJS(serverUrl);
     this.stompClient = Stomp.over(ws);
     const that = this;
-    // tslint:disable-next-line:only-arrow-functions
     this.stompClient.connect({}, function (frame) {
       that.stompClient.subscribe('/topic/positions', (data) => {
-        this.updatedDataSelection(data.message);
+        that.updatedDataSelection(JSON.parse(data.body));
       });
     });
   }
