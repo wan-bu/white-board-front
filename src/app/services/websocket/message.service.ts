@@ -12,9 +12,10 @@ export class MessageService {
 
 
   constructor() {
-    this.initializeWebSocketConnection();
+    // this.initializeWebSocketConnection();
   }
   public stompClient;
+  isConnected:boolean=false;
 
   private point = new BehaviorSubject<Point>(new Point(0, 0));
   data = this.point.asObservable();
@@ -25,16 +26,18 @@ export class MessageService {
   }
 
 
-  initializeWebSocketConnection() {
+  initializeWebSocketConnection() : boolean{
     const serverUrl = 'http://localhost:8090/websocket-kafka';
     const ws = new SockJS(serverUrl);
     this.stompClient = Stomp.over(ws);
     const that = this;
     this.stompClient.connect({}, function (frame) {
+      that.isConnected=true;
       that.stompClient.subscribe('/topic/positions', (data) => {
         that.updatedDataSelection(JSON.parse(data.body));
       });
     });
+    return this.isConnected;
   }
 
   sendMessage(message) {

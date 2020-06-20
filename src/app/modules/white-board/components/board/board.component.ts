@@ -15,23 +15,15 @@ export class BoardComponent implements OnInit {
   canvas: ElementRef<HTMLCanvasElement>;
 
   isMouseDown: boolean = false;
-  oldPosX: number = 0;
-  oldPosY: number = 0;
+
+  oldPoint: Point = new Point(0, 0);
+
+  isConnected: boolean = false;
 
   private ctx: CanvasRenderingContext2D;
 
   ngOnInit(): void {
     this.ctx = this.canvas.nativeElement.getContext('2d');
-    this.boardService.loadNewPoints();
-    this.boardService.data.subscribe(loadedPoint => {
-      console.log(loadedPoint);
-      if (this.oldPosX == 0 && this.oldPosY == 0) {
-        this.oldPosX = loadedPoint.posX;
-        this.oldPosY = loadedPoint.posY;
-      }
-      this.draw(loadedPoint);
-      console.log("ha7na dkhelna a hbiba !>>>> ", loadedPoint)
-    });
   }
 
   click(event) {
@@ -40,12 +32,14 @@ export class BoardComponent implements OnInit {
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
     console.log("x: " + x + " y: " + y);
-    this.oldPosX = x;
-    this.oldPosY = y;
-    let point = new Point(x, y);
-    this.draw(point);
-    this.boardService.sendPoint(point);
-    console.log("click");
+    this.oldPoint.posX = x;
+    this.oldPoint.posY = y;
+    let newPoint = new Point(x, y);
+    newPoint.isClick = this.isMouseDown;
+    this.draw(newPoint);
+    if (this.isConnected) {
+      this.boardService.sendPoint(newPoint);
+    }
   }
 
   trace(event) {
@@ -54,10 +48,12 @@ export class BoardComponent implements OnInit {
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
       console.log("x: " + x + " y: " + y);
-      let point = new Point(x, y);
-      this.draw(point);
-      this.boardService.sendPoint(point);
-      console.log("trace");
+      let newPoint = new Point(x, y);
+      newPoint.isClick = false;
+      this.draw(newPoint);
+      if (this.isConnected) {
+        this.boardService.sendPoint(newPoint);
+      }
     }
   }
 
@@ -69,15 +65,52 @@ export class BoardComponent implements OnInit {
   }
 
   draw(point: Point) {
-    // debugger
     this.ctx.beginPath();
-    this.ctx.moveTo(this.oldPosX, this.oldPosY);
+    this.ctx.moveTo(this.oldPoint.posX, this.oldPoint.posY);
     this.ctx.lineTo(point.posX, point.posY);
-    // this.ctx.lineWidth = 3;
-    this.ctx.strokeStyle = "#FF0000";
+    this.ctx.lineWidth = 2;
+    this.ctx.strokeStyle = this.getRandomColor();
     this.ctx.stroke();
-    this.oldPosX = point.posX;
-    this.oldPosY = point.posY;
+    this.oldPoint.posX = point.posX;
+    this.oldPoint.posY = point.posY;
   }
 
+  getRandomColor() {
+    var color = Math.floor(0x1000000 * Math.random()).toString(16);
+    return '#' + ('000000' + color).slice(-6);
+  }
+
+  connect() {
+    this.boardService.connect();
+    this.oldPoint = new Point(0, 0);
+    this.boardService.loadNewPoints();
+    this.boardService.data.subscribe(loadedPoint => {
+      if ((this.oldPoint.posX == 0 && this.oldPoint.posY == 0) || loadedPoint.isClick) {
+        this.oldPoint.posX = loadedPoint.posX;
+        this.oldPoint.posY = loadedPoint.posY;
+      }
+      if (loadedPoint.isCleaning) {
+        this.cleanCanvas();
+      }
+      this.draw(loadedPoint);
+    });
+    this.isConnected = true;
+  }
+
+  disconnect() {
+    this.boardService.disconnect();
+    this.isConnected = false;
+  }
+  clean() {
+    this.oldPoint = new Point(0, 0);
+    let newPoint = new Point(0, 0);
+    newPoint.isCleaning = true;
+    newPoint.isClick = true;
+    this.cleanCanvas();
+    this.boardService.sendPoint(newPoint);
+  }
+  cleanCanvas() {
+    this.ctx.fillRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
+    this.ctx.fill();
+  }
 }

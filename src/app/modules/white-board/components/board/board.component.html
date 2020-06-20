@@ -1,11 +1,21 @@
 
 <div class="container">
     <div class="jumbotron">
-      <h1>White Board</h1>
-      <h2>By Boukedir Marouane</h2>
+      <h2>Sketch Board</h2>
+      <h3>By Boukedir Marouane</h3>
     </div>
     <div class="panel panel-primary">
-      <div class="panel-heading">Board</div>
+
+      <div class="panel-heading"><h3>Board</h3>
+        <div class="container">
+          <button style="float: right;padding: 10px;margin: 10px;" (click)="clean()"  type="button" class="btn btn-warning">Clean</button>
+
+          <button style="float: right;padding: 10px;margin: 10px;" [disabled]="!isConnected" (click)="disconnect()" type="button" class="btn btn-danger">Disconnect</button>
+          <button style="float: right;padding: 10px;margin: 10px;" [disabled]="isConnected" (click)="connect()" type="button" class="btn btn-success">Connect</button>
+
+        </div>
+  
+      </div>
       <div class="panel-body" >
         <canvas #canvas style="border:1px solid #000000;" width="900" height="600"   (mousedown)="click($event)" (mousemove)="trace($event)" (mouseup)="release($event)" (mouseout)="release($event)"></canvas>
 

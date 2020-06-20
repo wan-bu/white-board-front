@@ -36,4 +36,13 @@ export class BoardService {
   public sendPoint(point:Point)  {
     this.messageService.sendMessage(point);
   }
+
+  public disconnect(){
+    this.messageService.stompClient.disconnect();
+    this.messageService.isConnected=false;
+  }
+
+  public connect():boolean{
+    return this.messageService.initializeWebSocketConnection();
+  }
 }
